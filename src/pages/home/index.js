@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react'
 import {getBooks} from "../../services/bookApi"
+import {Link} from "react-router-dom"
 export default function Home(){
     const [books, setBooks] = useState([]);
 
@@ -7,11 +8,9 @@ export default function Home(){
 
     //fazer algo no comecço da renderização do componente
     useEffect (()=> {
-      console.log( "Componente Home")
       const booksData = async ()=> {
         const data = await getBooks('harry')
-      console.log(data)
-      setBooks([ ...books, ... data.items])
+      setBooks(booksAtuais => [ ...booksAtuais, ...data.items])
     }
       booksData()
     }, [])
@@ -22,13 +21,11 @@ export default function Home(){
           return
         }
       const data = await getBooks(pesquisa)
-      console.log(data)
       setBooks(data.items)
     }
 
     booksData()
-   }, [pesquisa])
-
+   },[pesquisa])
     return (
         <section className= "container">
             <div className="row">
@@ -40,17 +37,17 @@ export default function Home(){
             </div>
             {books.map((book)=> { 
                 return (
-                    <div className="col-md-3">
+                    <div key={book.id} className="col-md-3">
                         <div className="card" style={{width: "100%"}}>
                             <img 
                             className="card-img-top" 
                               src={book.volumeInfo?.imageLinks?.thumbnail} 
-                              alt="Card image cap"
+                              alt={book.volumeInfo.title}
                              />
                             <div className="card-body">
                                 <h5 className="card-title">{book.volumeInfo.title}</h5>
                                 <p className="card-text">{book.volumeInfo.description}</p>
-                                <a href="#" className="btn btn-primary">Ver Reviews</a>
+                                <Link to={`/reviews/${book.id}`} className="btn btn-primary">Ver Reviews</Link>
                             </div>
                         </div>
                     </div>
